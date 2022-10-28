@@ -1,0 +1,25 @@
+[package]
+name = "installer"
+version = "0.1.0"
+edition = "2021"
+description = "Installer for the Geode modding platform"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+blocking = "1.2.0"
+iced = "0.4.2"
+native-dialog = "0.6.3"
+objc = "0.2.7"
+objc-foundation = "0.1.1"
+reqwest = { version = "0.11.12", features = ["blocking"] }
+zip-extract = "0.1.1"
+
+[package.metadata.bundle]
+name = "Geode Installer"
+identifier = "com.geode.installer"
+icon = ["assets/AppIcon.icns"]
+version = "0.1.0"
+copyright = "Copyright (c) Geode Development Team 2022. All rights reserved."
+category = "Developer Tool"
+short_description = "Installer for the Geode modding platform"
