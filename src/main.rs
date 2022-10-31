@@ -1,4 +1,6 @@
 use std::path::Path;
+use iced::svg;
+use iced::window::Position;
 use native_dialog::FileDialog;
 use iced::Settings;
 use iced::Sandbox;
@@ -20,7 +22,7 @@ use {
 };
 
 // Widgets
-use iced::widget::{Column, Text, Button, Row, TextInput, Container};
+use iced::widget::{Column, Text, Button, Row, TextInput, Container, Svg};
 
 mod gd_path;
 mod installation;
@@ -111,8 +113,16 @@ impl Sandbox for What {
         let col = Column::new()
             .align_items(Alignment::Center)
             .width(Length::Fill)
-            .padding(Padding::from([10, 0]))
-            .push(Text::new("Geode Installer").color(Color::new(0.93, 0.93, 0.93, 1.0)).size(42));
+            .padding(Padding::from([30, 0, 50, 0]))
+            .push(
+                Svg::new(svg::Handle::from_memory(
+                    *std::include_bytes!("../assets/geode-logo.svg")
+                )).height(Length::Units(75))
+            )
+            .push(
+                Text::new("Install Geode")
+                    .color(Color::new(0.93, 0.93, 0.93, 1.0)
+            ).size(30));
 
         match self.page {
             MessageType::Main => {
@@ -123,12 +133,17 @@ impl Sandbox for What {
                     MessageType::PathChange
                 ).style(MyInputStyle)
                  .width(Length::Fill)
-                 .size(12)
+                 .size(18)
                  .padding(Padding::from([6, 8]));
 
-                let path_select = Button::new(&mut self.path_btn, Text::new("Browse...").size(16))
+                let path_select = Button::new(
+                    &mut self.path_btn,
+                    Svg::new(svg::Handle::from_memory(
+                        *std::include_bytes!("../assets/folder.svg")
+                    )).height(Length::Units(18))
+                )
                     .style(MyOtherBtnStyle)
-                    .padding(Padding::from([6, 15]))
+                    .padding(Padding::from([6, 10]))
                     .on_press(MessageType::ChoosePath);
 
                 let row1 = Row::new()
@@ -138,12 +153,21 @@ impl Sandbox for What {
                     .push(path_input)
                     .push(path_select);
 
-                let mut install_btn = Button::new(&mut self.install_btn, Text::new("Install").size(25).horizontal_alignment(Horizontal::Center))
+                let mut install_btn = Button::new(
+                    &mut self.install_btn,
+                    Text::new("Install").size(20).horizontal_alignment(Horizontal::Center)
+                )
                     .style(MyBtnStyle)
-                    .width(Length::Units(120));
-                let mut uninstall_btn = Button::new(&mut self.uninstall_btn, Text::new("Uninstall").size(25).horizontal_alignment(Horizontal::Center))
+                    .padding(Padding::from([5, 10]))
+                    .width(Length::Units(110));
+                
+                let mut uninstall_btn = Button::new(
+                    &mut self.uninstall_btn,
+                    Text::new("Uninstall").size(20).horizontal_alignment(Horizontal::Center)
+                )
                     .style(MyBtnStyle)
-                    .width(Length::Units(120));
+                    .padding(Padding::from([5, 10]))
+                    .width(Length::Units(110));
 
                 let mut err_text = Text::new("Enter a valid path to Geometry Dash.").size(16);
                 if gd_path::validate_path(Path::new(&self.path_val)) {
@@ -158,7 +182,7 @@ impl Sandbox for What {
                 let row2 = Row::new()
                     .height(Length::Fill)
                     .align_items(Alignment::Center)
-                    .spacing(50)
+                    .spacing(48)
                     .push(install_btn)
                     .push(uninstall_btn);
 
@@ -176,9 +200,12 @@ impl Sandbox for What {
                     Color::new(1.0, 0.1, 0.1, 1.0)
                 };
 
-                let return_btn = Button::new(&mut self.back_btn, Text::new("Back").size(25))
+                let return_btn = Button::new(
+                    &mut self.back_btn, 
+                    Text::new("Back").size(20)
+                )
                     .style(MyBtnStyle)
-                    .padding(Padding::from([6, 18]))
+                    .padding(Padding::from([5, 10]))
                     .on_press(MessageType::Main);
 
                 col
@@ -195,8 +222,9 @@ impl Sandbox for What {
 
 pub fn main() -> iced::Result {
     let mut settings = Settings::default();
-    settings.window.size = (400, 300);
-    settings.window.min_size = Some((400, 300));
+    settings.window.size = (400, 330);
+    settings.window.min_size = Some((400, 330));
+    settings.window.position = Position::Centered;
 
     println!("{:?}", settings.window.min_size);
     What::run(settings)

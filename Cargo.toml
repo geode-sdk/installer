@@ -8,12 +8,17 @@ description = "Installer for the Geode modding platform"
 
 [dependencies]
 blocking = "1.2.0"
-iced = "0.4.2"
+iced = { version = "0.4.2", features = ["svg"] }
 native-dialog = "0.6.3"
-objc = "0.2.7"
-objc-foundation = "0.1.1"
 reqwest = { version = "0.11.12", features = ["blocking"] }
 zip-extract = "0.1.1"
+
+[target.'cfg(windows)'.dependencies]
+winreg = "0.7.0"
+
+[target.'cfg(macos)'.dependencies]
+objc = "0.2.7"
+objc-foundation = "0.1.1"
 
 [package.metadata.bundle]
 name = "Geode Installer"

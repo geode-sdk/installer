@@ -13,7 +13,7 @@ impl ButtonStyleSheet for MyBtnStyle {
     fn active(&self) -> ButtonStyle {
         let mut s = ButtonStyle::default();
         s.border_radius = 3.0;
-        s.background = Some(Background::Color(Color::new(0.44, 0.34, 0.64, 1.0)));
+        s.background = Some(Background::Color(Color::new(0.255, 0.24, 0.27, 1.0)));
         s.border_color = Color::new(0.73, 0.73, 0.73, 1.0);
         s.text_color = Color::new(0.93, 0.93, 0.93, 1.0);
         s
@@ -21,7 +21,7 @@ impl ButtonStyleSheet for MyBtnStyle {
 
     fn hovered(&self) -> ButtonStyle {
         let mut s = self.active();
-        s.background = Some(Background::Color(Color::new(0.54, 0.44, 0.74, 1.0)));
+        s.background = Some(Background::Color(Color::new(0.38, 0.35, 0.40, 1.0)));
         s
     }
 
@@ -35,7 +35,7 @@ impl ButtonStyleSheet for MyOtherBtnStyle {
     fn active(&self) -> ButtonStyle {
         let mut s = ButtonStyle::default();
         s.border_radius = 3.0;
-        s.background = Some(Background::Color(Color::new(0.34, 0.34, 0.34, 1.0)));
+        s.background = Some(Background::Color(Color::new(0.24, 0.24, 0.24, 1.0)));
         s.border_color = Color::new(0.73, 0.73, 0.73, 1.0);
         s.text_color = Color::new(0.93, 0.93, 0.93, 1.0);
         s
@@ -43,7 +43,7 @@ impl ButtonStyleSheet for MyOtherBtnStyle {
 
     fn hovered(&self) -> ButtonStyle {
         let mut s = self.active();
-        s.background = Some(Background::Color(Color::new(0.54, 0.54, 0.54, 1.0)));
+        s.background = Some(Background::Color(Color::new(0.35, 0.35, 0.35, 1.0)));
         s
     }
 
