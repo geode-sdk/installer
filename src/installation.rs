@@ -7,20 +7,20 @@ use reqwest::blocking as reqwest;
 use std::fs;
 
 #[cfg(windows)]
-fn check_for_modloaders(path: &Path) -> Result<(), String> {
+fn check_for_modloaders(path: &Path) -> Option<String> {
 	if path.join("ToastedMarshmellow.dll").exists() {
-		return Err("GDHM".into());
+		Some("GDHM")
+	} else if path.join("hackpro.dll").exists() {
+		Some("Mega Hack")
+	} else if path.join("quickldr.dll").exists() {
+		Some("QuickLdr")
+	} else if path.join("XInput9_1_0.dll").exists() {
+		Some("Unknown")
+	} else if path.join("gddllloader.dll").exists() {
+		Some("GD DLL Loader")
+	} else {
+		None
 	}
-	if path.join("hackpro.dll").exists() {
-		return Err("Mega Hack".into());
-	}
-	if path.join("quickldr.dll").exists() {
-		return Err("QuickLdr".into());
-	}
-	if path.join("XInput9_1_0.dll").exists() {
-		return Err("Unknown".into());
-	}
-	Ok(())
 }
 
 pub fn install_to(path: &Path) -> Result<(), String> {
@@ -56,11 +56,13 @@ pub fn install_to(path: &Path) -> Result<(), String> {
 	}
 
 	#[cfg(windows)]
-	check_for_modloaders(&path).map_err(|e| format!(
-		"It seems like you already have a mod loader ({}) installed! \
-		Please uninstall it first before installing Geode.",
-		e
-	))?;
+	if let Some(ml) = check_for_modloaders(&path) {
+		Err(format!(
+			"It seems like you already have a mod loader ({}) installed! \
+			Please uninstall it first before installing Geode.",
+			e
+		))?;
+	}
 
 	zip_extract::extract(Cursor::new(download_file.bytes().unwrap()), &dest_path, true).with_msg("Unable to extract archive")?;
 

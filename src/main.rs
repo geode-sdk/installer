@@ -141,10 +141,9 @@ impl Sandbox for What {
                     Svg::new(svg::Handle::from_memory(
                         *std::include_bytes!("../assets/folder.svg")
                     )).height(Length::Units(18))
-                )
-                    .style(MyOtherBtnStyle)
-                    .padding(Padding::from([6, 10]))
-                    .on_press(MessageType::ChoosePath);
+                ).style(MyOtherBtnStyle)
+                 .padding(Padding::from([6, 10]))
+                 .on_press(MessageType::ChoosePath);
 
                 let row1 = Row::new()
                     .padding(Padding::from([30, 30, 10, 30]))
@@ -203,10 +202,9 @@ impl Sandbox for What {
                 let return_btn = Button::new(
                     &mut self.back_btn, 
                     Text::new("Back").size(20)
-                )
-                    .style(MyBtnStyle)
-                    .padding(Padding::from([5, 10]))
-                    .on_press(MessageType::Main);
+                ).style(MyBtnStyle)
+                 .padding(Padding::from([5, 10]))
+                 .on_press(MessageType::Main);
 
                 col
                     .push(Text::new(text).color(color))

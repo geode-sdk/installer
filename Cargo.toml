@@ -16,7 +16,7 @@ zip-extract = "0.1.1"
 [target.'cfg(windows)'.dependencies]
 winreg = "0.7.0"
 
-[target.'cfg(macos)'.dependencies]
+[target.'cfg(target_os = "macos")'.dependencies]
 objc = "0.2.7"
 objc-foundation = "0.1.1"
 
