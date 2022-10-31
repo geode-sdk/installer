@@ -27,7 +27,7 @@ pub fn install_to(path: &Path) -> Result<(), String> {
 	let dest_path = if cfg!(target_os = "macos") {
 		path.join(Path::new("Contents/Frameworks/"))
 	} else if cfg!(windows) {
-		unimplemented!("Windows lol");
+		path.parent().unwrap().to_path_buf()
 	} else {
 		unreachable!();
 	};
@@ -64,7 +64,7 @@ pub fn uninstall_from(path: &Path) -> Result<(), String> {
 		fs::rename(src_path.join("restore_fmod.dylib"), src_path.join("libfmod.dylib")).with_msg("Unable to restore fmod")?;
 	}
 	#[cfg(windows)] {
-		let src_path: &Path = unimplemented!("Windows lol");
+		let src_path: &Path = path.parent().unwrap();
 		fs::remove_file(src_path.join("XInput9_1_0.dll")).with_msg("Unable to remove XInput9_1_0")?;
 		fs::remove_file(src_path.join("Geode.dll")).with_msg("Unable to remove Geode")?;
 		fs::remove_file(src_path.join("Geode.lib")).with_msg("Unable to remove Geode")?;
@@ -74,7 +74,7 @@ pub fn uninstall_from(path: &Path) -> Result<(), String> {
 	let geode_dir = if cfg!(target_os = "macos") {
 		path.join(Path::new("Contents/geode"))
 	} else if cfg!(windows) {
-		unimplemented!("Windows lol");
+		path.parent().unwrap().join("geode")
 	} else {
 		unreachable!();
 	};
