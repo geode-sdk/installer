@@ -19,6 +19,9 @@ winreg = "0.7.0"
 [target.'cfg(target_os = "macos")'.dependencies]
 objc = "0.2.7"
 objc-foundation = "0.1.1"
+plist = "1"
+launch-services = "0.0.2"
+core-foundation = "0.6.4"
 
 [package.metadata.bundle]
 name = "Geode Installer"

@@ -25,6 +25,7 @@ use {
 use iced::widget::{Column, Text, Button, Row, TextInput, Container, Svg};
 
 mod gd_path;
+mod register;
 mod installation;
 mod error;
 mod styles;
