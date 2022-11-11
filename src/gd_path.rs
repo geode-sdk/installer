@@ -1,7 +1,7 @@
-use std::path::{Path, PathBuf};
+use std::path::{Path};
 
 #[cfg(target_os = "macos")]
-unsafe fn try_from_bundle(bundle: &str) -> Option<String> {
+pub unsafe fn try_from_bundle(bundle: &str) -> Option<String> {
 	use objc::{*, runtime::Object};
 	use objc_foundation::{NSString, INSString};
 

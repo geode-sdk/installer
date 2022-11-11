@@ -19,6 +19,9 @@ winreg = "0.7.0"
 [target.'cfg(target_os = "macos")'.dependencies]
 objc = "0.2.7"
 objc-foundation = "0.1.1"
+plist = "1"
+launch-services = "0.0.2"
+core-foundation = "0.6.4"
 
 [package.metadata.bundle]
 name = "Geode Installer"
@@ -28,3 +31,4 @@ version = "0.1.0"
 copyright = "Copyright (c) Geode Development Team 2022. All rights reserved."
 category = "Developer Tool"
 short_description = "Installer for the Geode modding platform"
+osx_minimum_system_version = "10.9"

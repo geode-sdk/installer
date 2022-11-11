@@ -3,6 +3,7 @@ use std::io::Cursor;
 use std::path::Path;
 use crate::gd_path::validate_path;
 use crate::error::ErrMessage;
+use crate::register::{register_extension, unregister_extension};
 use reqwest::blocking as reqwest;
 use std::fs;
 
@@ -66,6 +67,8 @@ pub fn install_to(path: &Path) -> Result<(), String> {
 
 	zip_extract::extract(Cursor::new(download_file.bytes().unwrap()), &dest_path, true).with_msg("Unable to extract archive")?;
 
+	register_extension(path)?;
+
 	Ok(())
 }
 
@@ -105,6 +108,8 @@ pub fn uninstall_from(path: &Path) -> Result<(), String> {
 	if geode_dir.exists() {
 		fs::remove_dir_all(geode_dir).with_msg("Unable to remove Geode directory")?;
 	}
+
+	unregister_extension(path)?;
 
 	Ok(())
 }
