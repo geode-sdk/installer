@@ -1,5 +1,5 @@
 use std::path::Path;
-use iced::svg;
+use std::borrow::Cow;
 use iced::window::Position;
 use native_dialog::FileDialog;
 use iced::Settings;
@@ -12,17 +12,15 @@ use iced::{
     Length,
     Padding,
     Color,
+    Theme,
     alignment::Horizontal
-};
-
-// Action Utils
-use {
-    iced::button::State as ButtonState,
-    iced::text_input::State as TextInputState
 };
 
 // Widgets
 use iced::widget::{Column, Text, Button, Row, TextInput, Container, Svg};
+
+// Svg
+use iced::widget::svg;
 
 mod gd_path;
 mod register;
@@ -41,11 +39,6 @@ enum MessageType {
 }
 
 struct What {
-    install_btn: ButtonState,
-    uninstall_btn: ButtonState,
-    path_btn: ButtonState,
-    back_btn: ButtonState,
-    path_input: TextInputState,
     path_val: String,
     output_val: Result<String, String>,
     page: MessageType
@@ -54,8 +47,11 @@ struct What {
 impl Sandbox for What {
     type Message = MessageType;
 
-    fn background_color(&self) -> Color {
-        Color::new(0.1, 0.1, 0.1, 1.0)
+    fn theme(&self) -> Theme {
+        let mut palette = Theme::default().palette();
+        palette.background = Color::new(0.1, 0.1, 0.1, 1.0);
+
+        Theme::custom(palette)
     }
 
     fn title(&self) -> String {
@@ -64,11 +60,6 @@ impl Sandbox for What {
 
     fn new() -> What {
         What {
-            install_btn: ButtonState::default(),
-            uninstall_btn: ButtonState::default(),
-            path_btn: ButtonState::default(),
-            back_btn: ButtonState::default(),
-            path_input: TextInputState::default(),
             path_val: gd_path::find_path().unwrap_or(String::new()),
             output_val: Ok(String::new()),
             page: MessageType::Main
@@ -104,48 +95,47 @@ impl Sandbox for What {
 
                 if let Some(path) = dialog.show_open_single_file().unwrap() {
                     self.path_val = path.to_str().unwrap().to_string();
-                    self.path_input.move_cursor_to_end();
                 }
             }
         }
     }
 
-    fn view(&mut self) -> Element<Self::Message> {
+    fn view(&self) -> Element<Self::Message> {
+        // Vertical alignment
         let col = Column::new()
             .align_items(Alignment::Center)
             .width(Length::Fill)
             .padding(Padding::from([30, 0, 50, 0]))
             .push(
                 Svg::new(svg::Handle::from_memory(
-                    *std::include_bytes!("../assets/geode-logo.svg")
+                    Cow::from(&std::include_bytes!("../assets/geode-logo.svg")[..])
                 )).height(Length::Units(75))
             )
             .push(
                 Text::new("Install Geode")
-                    .color(Color::new(0.93, 0.93, 0.93, 1.0)
+                    .style(Color::new(0.93, 0.93, 0.93, 1.0)
             ).size(30));
 
         match self.page {
             MessageType::Main => {
                 let path_input = TextInput::new(
-                    &mut self.path_input,
                     "Path to Geometry Dash",
                     &self.path_val,
                     MessageType::PathChange
-                ).style(MyInputStyle)
+                ).style(MyInputStyle::theme())
                  .width(Length::Fill)
                  .size(18)
                  .padding(Padding::from([6, 8]));
 
                 let path_select = Button::new(
-                    &mut self.path_btn,
                     Svg::new(svg::Handle::from_memory(
-                        *std::include_bytes!("../assets/folder.svg")
+                        Cow::from(&std::include_bytes!("../assets/folder.svg")[..])
                     )).height(Length::Units(18))
-                ).style(MyOtherBtnStyle)
+                ).style(MyOtherBtnStyle::theme())
                  .padding(Padding::from([6, 10]))
                  .on_press(MessageType::ChoosePath);
 
+                // Row for path selection and button
                 let row1 = Row::new()
                     .padding(Padding::from([30, 30, 10, 30]))
                     .spacing(20)
@@ -154,31 +144,30 @@ impl Sandbox for What {
                     .push(path_select);
 
                 let mut install_btn = Button::new(
-                    &mut self.install_btn,
                     Text::new("Install").size(20).horizontal_alignment(Horizontal::Center)
                 )
-                    .style(MyBtnStyle)
+                    .style(MyBtnStyle::theme())
                     .padding(Padding::from([5, 10]))
                     .width(Length::Units(110));
                 
                 let mut uninstall_btn = Button::new(
-                    &mut self.uninstall_btn,
                     Text::new("Uninstall").size(20).horizontal_alignment(Horizontal::Center)
                 )
-                    .style(MyBtnStyle)
+                    .style(MyBtnStyle::theme())
                     .padding(Padding::from([5, 10]))
                     .width(Length::Units(110));
 
                 let mut err_text = Text::new("Enter a valid path to Geometry Dash.").size(16);
                 if gd_path::validate_path(Path::new(&self.path_val)) {
-                    err_text = err_text.color(Color::new(0.0, 0.0, 0.0, 0.0));
+                    err_text = err_text.style(Color::new(0.0, 0.0, 0.0, 0.0));
 
                     install_btn = install_btn.on_press(MessageType::Install);
                     uninstall_btn = uninstall_btn.on_press(MessageType::Uninstall);
                 } else {
-                    err_text = err_text.color(Color::new(1.0, 0.1, 0.1, 1.0));
+                    err_text = err_text.style(Color::new(1.0, 0.1, 0.1, 1.0));
                 }
 
+                // Row for the install/uninstall buttons
                 let row2 = Row::new()
                     .height(Length::Fill)
                     .align_items(Alignment::Center)
@@ -201,14 +190,13 @@ impl Sandbox for What {
                 };
 
                 let return_btn = Button::new(
-                    &mut self.back_btn, 
                     Text::new("Back").size(20)
-                ).style(MyBtnStyle)
+                ).style(MyBtnStyle::theme())
                  .padding(Padding::from([5, 10]))
                  .on_press(MessageType::Main);
 
                 col
-                    .push(Text::new(text).color(color))
+                    .push(Text::new(text).style(color))
                     .spacing(20)
                     .push(Container::new(return_btn).height(Length::Fill).center_y().center_x())
                     .into()
