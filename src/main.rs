@@ -38,13 +38,13 @@ enum MessageType {
     ChoosePath
 }
 
-struct What {
+struct MainWindow {
     path_val: String,
     output_val: Result<String, String>,
     page: MessageType
 }
 
-impl Sandbox for What {
+impl Sandbox for MainWindow {
     type Message = MessageType;
 
     fn theme(&self) -> Theme {
@@ -58,8 +58,8 @@ impl Sandbox for What {
         String::from("Geode Installer")
     }
 
-    fn new() -> What {
-        What {
+    fn new() -> Self {
+        Self {
             path_val: gd_path::find_path().unwrap_or(String::new()),
             output_val: Ok(String::new()),
             page: MessageType::Main
@@ -213,5 +213,5 @@ pub fn main() -> iced::Result {
     settings.window.min_size = Some((400, 330));
     settings.window.position = Position::Centered;
 
-    What::run(settings)
+    MainWindow::run(settings)
 }
