@@ -38,9 +38,9 @@ pub fn register_extension(path: &Path) -> Result<(), String> {
 	 		.with_msg("Unable to copy icon")?;
  	}
 
- 	#[cfg(windows)] {
- 		unimplemented!("Windows lol");
- 	}
+ 	// #[cfg(windows)] {
+ 	// 	unimplemented!("implement registering .geode file extension");
+ 	// }
 
 	Ok(())
 }
@@ -69,9 +69,9 @@ pub fn unregister_extension(path: &Path) -> Result<(), String> {
 	 	};
 	}
 
-	#[cfg(windows)] {
-		unimplemented!("Windows lol");
-	}
+	// #[cfg(windows)] {
+	// 	unimplemented!("implement unregistering .geode file extension");
+	// }
 
 	Ok(())
 }

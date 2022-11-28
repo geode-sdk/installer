@@ -8,7 +8,7 @@ use reqwest::blocking as reqwest;
 use std::fs;
 
 #[cfg(windows)]
-fn check_for_modloaders(path: &Path) -> Option<String> {
+fn check_for_modloaders(path: &Path) -> Option<&str> {
 	if path.join("ToastedMarshmellow.dll").exists() {
 		Some("GDHM")
 	} else if path.join("hackpro.dll").exists() {
@@ -57,11 +57,11 @@ pub fn install_to(path: &Path) -> Result<(), String> {
 	}
 
 	#[cfg(windows)]
-	if let Some(ml) = check_for_modloaders(&path) {
+	if let Some(mod_loader) = check_for_modloaders(&path) {
 		Err(format!(
 			"It seems like you already have a mod loader ({}) installed! \
 			Please uninstall it first before installing Geode.",
-			e
+			mod_loader
 		))?;
 	}
 

@@ -1,4 +1,4 @@
-use std::path::{Path};
+use std::path::{Path, PathBuf};
 
 #[cfg(target_os = "macos")]
 pub unsafe fn try_from_bundle(bundle: &str) -> Option<String> {
@@ -68,7 +68,7 @@ pub fn find_path() -> Option<String> {
 
 	#[cfg(windows)]
 	get_path_from_steam().map(
-		|s| s.to_str().unwrap().to_string().replace("\\\\", "/")
+		|s| s.to_str().unwrap().to_string().replace("\\", "/")
 	)
 }
 
