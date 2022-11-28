@@ -213,6 +213,5 @@ pub fn main() -> iced::Result {
     settings.window.min_size = Some((400, 330));
     settings.window.position = Position::Centered;
 
-    println!("{:?}", settings.window.min_size);
     What::run(settings)
 }
