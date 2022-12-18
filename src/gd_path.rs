@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[cfg(target_os = "macos")]
 pub unsafe fn try_from_bundle(bundle: &str) -> Option<String> {
@@ -78,7 +78,7 @@ pub fn validate_path(path: &Path) -> bool {
 	}
 
 	#[cfg(target_os = "macos")]
-	return path.is_dir() && path.join(Path::new("Contents/Frameworks/libfmod.dylib")).exists();
+	return path.is_dir() && path.join(Path::new("Contents/Frameworks/DDHidLib.framework")).exists();
 
 	#[cfg(windows)]
 	return !path.is_dir() && path.parent().is_some() && path.parent().unwrap().join("libcocos2d.dll").exists();

@@ -29,13 +29,17 @@ pub fn install_to(path: &Path) -> Result<(), String> {
 		Err("Invalid Geometry Dash path".to_string())?;
 	}
 
-	let latest_version = reqwest::get("https://raw.githubusercontent.com/geode-sdk/geode/main/VERSION")
-		.with_msg("Unable to fetch version")?
-		.text()
-		.with_msg("Unable to decode version")?;
+	let client = reqwest::Client::new();
+	let version_test = client.head("https://github.com/geode-sdk/geode/releases/latest").send().with_msg("Unable to fetch version")?;
+
+	let latest_version = version_test
+		.url()
+		.path_segments()
+		.ok_or("Unable to decode version")?
+		.last().unwrap();
 
 	let url_str = format!(
-		"https://github.com/geode-sdk/geode/releases/download/v{ver}/geode-v{ver}-{platform}.zip",
+		"https://github.com/geode-sdk/geode/releases/download/{ver}/geode-{ver}-{platform}.zip",
 		ver = latest_version,
 		platform = if cfg!(target_os = "macos") { "mac" } else { "win" }
 	);
