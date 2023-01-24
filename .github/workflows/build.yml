@@ -1,8 +1,11 @@
 name: Build Binaries
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ master ]
+    branches:
+    - '**'              # every branch
+    - '!no-build-**'    # unless marked as no-build
 
 jobs:
   build:
