@@ -32,13 +32,13 @@ jobs:
         key: ${{ matrix.config.name }}
         
     - name: Build macOS
-      if: matrix.config.name == "macOS"
+      if: matrix.config.name == macOS
       run: |
         cargo install cargo-bundle
         cargo bundle --release
         
     - name: Build Windows
-      if: matrix.config.name == "Windows"
+      if: matrix.config.name == Windows
       run: |
         cargo build --release
     
