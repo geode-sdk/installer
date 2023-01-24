@@ -1,6 +1,6 @@
 [package]
 name = "installer"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Installer for the Geode modding platform"
 
@@ -11,6 +11,8 @@ blocking = "1.2.0"
 iced = { version = "0.4.2", features = ["svg"] }
 native-dialog = "0.6.3"
 reqwest = { version = "0.11.12", features = ["blocking"] }
+serde = { version = "1.0.152", features = ["derive"] }
+serde_json = "1.0.91"
 zip-extract = "0.1.1"
 
 [target.'cfg(windows)'.dependencies]

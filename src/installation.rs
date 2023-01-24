@@ -5,6 +5,7 @@ use crate::gd_path::validate_path;
 use crate::error::ErrMessage;
 use reqwest::blocking as reqwest;
 use std::fs;
+use serde::Deserialize;
 
 #[cfg(windows)]
 fn check_for_modloaders(path: &Path) -> Result<(), String> {
@@ -23,23 +24,49 @@ fn check_for_modloaders(path: &Path) -> Result<(), String> {
 	Ok(())
 }
 
+#[derive(Deserialize)]
+struct GithubReleaseAsset {
+	name: String,
+	browser_download_url: String,
+}
+
+#[derive(Deserialize)]
+struct GithubApiResponse {
+	assets: Vec<GithubReleaseAsset>,
+}
+
 pub fn install_to(path: &Path) -> Result<(), String> {
 	if !validate_path(path) {
 		Err("Invalid Geometry Dash path".to_string())?;
 	}
 
-	let latest_version = reqwest::get("https://raw.githubusercontent.com/geode-sdk/geode/main/VERSION")
-		.with_msg("Unable to fetch version")?
+	let latest_version = serde_json::from_str::<GithubApiResponse>(
+		&reqwest::Client::builder()
+		.user_agent("github_api/1.0")
+		.build()
+		.with_msg("Unable to fetch latest release info")?
+		.get("https://api.github.com/repos/geode-sdk/geode/releases/latest")
+		.send()
+		.with_msg("Unable to fetch latest release info")?
 		.text()
-		.with_msg("Unable to decode version")?;
+		.with_msg("Unable to read latest release info")?
+	).with_msg("Request rate-limited")?;
 
-	let url_str = format!(
-		"https://github.com/geode-sdk/geode/releases/download/v{ver}/geode-v{ver}-{platform}.zip",
-		ver = latest_version,
-		platform = if cfg!(target_os = "macos") { "mac" } else { "win" }
-	);
+	let mut url_str = None;
+	for asset in latest_version.assets {
+		if asset.name.contains(if cfg!(target_os = "macos") { "mac" } else { "win" }) {
+			url_str = Some(asset.browser_download_url);
+			break;
+		}
+	}
+	if url_str.is_none() {
+		Err(format!(
+			"No download for {} found",
+			if cfg!(target_os = "macos") { "MacOS" } else { "Windows" }
+		))?;
+	}
 
-	let download_file = reqwest::get(url_str).with_msg("Unable to download Geode")?;
+	let download_file = reqwest::get(url_str.unwrap()).with_msg("Unable to download Geode")?;
 
 	let dest_path = if cfg!(target_os = "macos") {
 		path.join(Path::new("Contents/Frameworks/"))

@@ -1,3 +1,6 @@
+
+#![windows_subsystem = "windows"]
+
 use std::path::Path;
 use iced::svg;
 use iced::window::Position;
@@ -225,7 +228,5 @@ pub fn main() -> iced::Result {
     settings.window.size = (400, 330);
     settings.window.min_size = Some((400, 330));
     settings.window.position = Position::Centered;
-
-    println!("{:?}", settings.window.min_size);
     What::run(settings)
 }
