@@ -1,0 +1,52 @@
+name: Build Binaries
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - name: "Windows"
+          os: windows-latest
+          build_output: './build/release/installer.exe'
+          file_name: 'GeodeInstaller-win.exe'
+        - name: "macOS"
+          os: macos-latest
+          build_output: './build/release/installer'
+          file_name: 'GeodeInstaller-mac'
+    
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        
+    - uses: Swatinem/rust-cache@v1
+      with:
+        key: ${{ matrix.config.name }}
+        target-dir: ./build
+
+    - name: Build
+      run: |
+        cargo build --release --target-dir ${{ github.workspace }}/build     
+    
+    - name: Move to output folder
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        mkdir out
+        mv ${{ matrix.config.build_output }} ./out/${{ matrix.config.file_name }}
+        
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.config.name }} Geode Installer
+        path: ./out/${{ matrix.config.file_name }}
