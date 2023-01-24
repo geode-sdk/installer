@@ -12,12 +12,12 @@ jobs:
         config:
         - name: "Windows"
           os: windows-latest
-          build_output: './target/release/installer.exe'
-          file_name: 'GeodeInstaller-win.exe'
+          build_output: './target/release/installer.msi'
+          file_name: 'GeodeInstaller-win.msi'
         - name: "macOS"
           os: macos-latest
-          build_output: './target/release/installer'
-          file_name: 'GeodeInstaller-mac'
+          build_output: './target/release/installer.app'
+          file_name: 'GeodeInstaller-mac.app'
     
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
@@ -30,10 +30,11 @@ jobs:
     - uses: Swatinem/rust-cache@v2
       with:
         key: ${{ matrix.config.name }}
-
+        
     - name: Build
       run: |
-        cargo build --release
+        cargo install cargo-bundle
+        cargo bundle --release
     
     - name: Move to output folder
       shell: bash
