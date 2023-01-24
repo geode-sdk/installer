@@ -52,7 +52,7 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: |
         mkdir out
-        mv ${{ matrix.config.build_output }} ./out/${{ matrix.config.file_name }}
+        mv "${{ matrix.config.build_output }}" "./out/${{ matrix.config.file_name }}"
         
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
