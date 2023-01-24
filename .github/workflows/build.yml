@@ -14,10 +14,12 @@ jobs:
       matrix:
         config:
         - name: "Windows"
+          os_identifier: "win"
           os: windows-latest
           build_output: './target/release/installer.exe'
           file_name: 'GeodeInstaller-win.exe'
         - name: "macOS"
+          os_identifier: "mac"
           os: macos-latest
           build_output: './target/release/bundle/osx/Geode Installer.app'
           file_name: 'GeodeInstaller-mac.app'
@@ -35,13 +37,13 @@ jobs:
         key: ${{ matrix.config.name }}
         
     - name: Build macOS
-      if: matrix.config.name == "macOS"
+      if: matrix.config.os_identifier == 'mac'
       run: |
         cargo install cargo-bundle
         cargo bundle --release
         
     - name: Build Windows
-      if: matrix.config.name == "Windows"
+      if: matrix.config.os_identifier == 'win'
       run: |
         cargo build --release
     
