@@ -12,31 +12,28 @@ jobs:
         config:
         - name: "Windows"
           os: windows-latest
-          build_output: './build/release/installer.exe'
+          build_output: './target/release/installer.exe'
           file_name: 'GeodeInstaller-win.exe'
         - name: "macOS"
           os: macos-latest
-          build_output: './build/release/installer'
+          build_output: './target/release/installer'
           file_name: 'GeodeInstaller-mac'
     
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
+    - uses: dtolnay/rust-toolchain@stable
         
-    - uses: Swatinem/rust-cache@v1
+    - uses: Swatinem/rust-cache@v2
       with:
         key: ${{ matrix.config.name }}
-        target-dir: ./build
 
     - name: Build
       run: |
-        cargo build --release --target-dir ${{ github.workspace }}/build     
+        cargo build --release
     
     - name: Move to output folder
       shell: bash
