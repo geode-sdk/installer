@@ -55,7 +55,15 @@ jobs:
         mv "${{ matrix.config.build_output }}" "./out/${{ matrix.config.file_name }}"
         
     - name: Upload Artifacts
+      if: matrix.config.os_identifier == 'win'
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.config.name }} Geode Installer
         path: ./out/${{ matrix.config.file_name }}
+        
+    - name: Upload Artifacts
+      if: matrix.config.os_identifier == 'mac'
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.config.name }} Geode Installer
+        path: ./out
