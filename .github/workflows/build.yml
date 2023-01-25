@@ -22,7 +22,7 @@ jobs:
           os_identifier: "mac"
           os: macos-latest
           build_output: './target/release/bundle/osx/Geode Installer.app'
-          file_name: 'GeodeInstaller-mac.app'
+          file_name: 'GeodeInstaller.app'
     
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
@@ -54,16 +54,16 @@ jobs:
         mkdir out
         mv "${{ matrix.config.build_output }}" "./out/${{ matrix.config.file_name }}"
         
-    - name: Upload Artifacts
-      if: matrix.config.os_identifier == 'win'
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ matrix.config.name }} Geode Installer
-        path: ./out/${{ matrix.config.file_name }}
-        
-    - name: Upload Artifacts
+    - name: Move macOS files
+      shell: bash
       if: matrix.config.os_identifier == 'mac'
+      working-directory: ${{ github.workspace }}
+      run: |
+        chmod +x ./out/${{ matrix.config.file_name }}/Contents/MacOS/installer
+      
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.config.name }} Geode Installer
+        name: GeodeInstaller-${{ matrix.config.os_identifier }}
         path: ./out
+  
