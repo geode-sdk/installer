@@ -83,12 +83,18 @@ pub fn install_to(path: &Path) -> Result<(), String> {
 	}
 
 	#[cfg(windows)]
-	if let Some(mod_loader) = check_for_modloaders(&path.parent().unwrap()) {
-		return Err(format!(
-			"It seems like you already have a mod loader ({}) installed! \
-			Please uninstall it first before installing Geode.",
-			mod_loader
-		));
+	if let Some(mod_loader) = check_for_modloaders(&dest_path) {
+		// check_for_modloaders will detect the xinput dll
+		// as an unknown mod loader (as it could be something like proxydllloader),
+		// however it could also be geode itself, so in that case ignore and install over geode,
+		// effectively updating it
+		if !dest_path.join("Geode.dll").exists() {
+			return Err(format!(
+				"It seems like you already have a mod loader ({}) installed! \
+				Please uninstall it first before installing Geode.",
+				mod_loader
+			));
+		}
 	}
 
 	zip_extract::extract(Cursor::new(download_file.bytes().unwrap()), &dest_path, true).with_msg("Unable to extract archive")?;
