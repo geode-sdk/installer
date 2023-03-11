@@ -1,4 +1,3 @@
-
 use std::io::Cursor;
 use std::path::Path;
 use crate::gd_path::validate_path;
@@ -94,6 +93,12 @@ pub fn install_to(path: &Path) -> Result<(), String> {
 
 	zip_extract::extract(Cursor::new(download_file.bytes().unwrap()), &dest_path, true).with_msg("Unable to extract archive")?;
 
+	#[cfg(windows)] {
+		// This file comes with the geode release for developers,
+		// however it is not needed by the end user
+		let _ = fs::remove_file(dest_path.join("Geode.lib"));
+	}
+
 	register_extension(path)?;
 
 	Ok(())
@@ -120,7 +125,7 @@ pub fn uninstall_from(path: &Path) -> Result<(), String> {
 		let src_path: &Path = path.parent().unwrap();
 		fs::remove_file(src_path.join("XInput9_1_0.dll")).with_msg("Unable to remove XInput9_1_0")?;
 		fs::remove_file(src_path.join("Geode.dll")).with_msg("Unable to remove Geode")?;
-		fs::remove_file(src_path.join("Geode.lib")).with_msg("Unable to remove Geode")?;
+		let _ = fs::remove_file(src_path.join("Geode.lib"));
 		fs::remove_file(src_path.join("GeodeBootstrapper.dll")).with_msg("Unable to remove GeodeBootstrapper")?;
 	}
 
