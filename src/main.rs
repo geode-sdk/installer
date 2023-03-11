@@ -1,4 +1,3 @@
-
 #![windows_subsystem = "windows"]
 
 use std::path::Path;
@@ -211,6 +210,20 @@ impl Sandbox for MainWindow {
 }
 
 pub fn main() -> iced::Result {
+    std::panic::set_hook(Box::new(|info| {
+        let mut msg;
+        if let Some(s) = info.payload().downcast_ref::<String>() {
+            msg = s.clone();
+        } else {
+            msg = "unk msg".into();
+        }
+        if let Some(location) = info.location() {
+            msg += format!("\noccurred in file {} at line {}", location.file(), location.line()).as_str();
+        }
+        // Don't handle if message box fails to be created, we're already in a panic handler anyways...
+        let _ = msgbox::create("Panic!", msg.as_str(), msgbox::IconType::Error);
+    }));
+
     let mut settings = Settings::default();
     settings.window.size = (400, 330);
     settings.window.min_size = Some((400, 330));

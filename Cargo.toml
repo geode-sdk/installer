@@ -9,6 +9,7 @@ description = "Installer for the Geode modding platform"
 [dependencies]
 blocking = "1.2.0"
 iced = { version = "0.5.2", features = ["glow", "svg"] }
+msgbox = "0.7.0"
 native-dialog = "0.6.3"
 reqwest = { version = "0.11.12", features = ["blocking"] }
 serde = { version = "1.0.152", features = ["derive"] }
