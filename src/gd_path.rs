@@ -2,11 +2,14 @@ use std::path::{Path, PathBuf};
 
 #[cfg(target_os = "macos")]
 pub unsafe fn try_from_bundle(bundle: &str) -> Option<String> {
-	use objc::{*, runtime::Object};
-	use objc_foundation::{NSString, INSString};
+	use objc::{runtime::Object, *};
+	use objc_foundation::{INSString, NSString};
 
 	let workspace: *mut Object = msg_send![class!(NSWorkspace), sharedWorkspace];
-	let url: *mut Object = msg_send![workspace, URLForApplicationWithBundleIdentifier: NSString::from_str(bundle)];
+	let url: *mut Object = msg_send![
+		workspace,
+		URLForApplicationWithBundleIdentifier: NSString::from_str(bundle)
+	];
 	let out: *mut NSString = msg_send![url, path];
 
 	let out_str = (*out).as_str();
@@ -19,36 +22,42 @@ pub unsafe fn try_from_bundle(bundle: &str) -> Option<String> {
 
 #[cfg(target_os = "windows")]
 fn get_path_from_steam() -> Option<PathBuf> {
-	use std::io::{Lines, Result, BufReader, BufRead};
 	use std::fs::File;
-	use winreg::{RegKey, enums::HKEY_LOCAL_MACHINE};
+	use std::io::{BufRead, BufReader, Lines, Result};
+	use winreg::{enums::HKEY_LOCAL_MACHINE, RegKey};
 
 	fn read_lines<P>(filename: P) -> Result<Lines<BufReader<File>>>
-	where P: AsRef<Path>, {
+	where
+		P: AsRef<Path>,
+	{
 		let file = File::open(filename)?;
 		Ok(BufReader::new(file).lines())
 	}
 
 	let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-	let steam_key = hklm.open_subkey("SOFTWARE\\WOW6432Node\\Valve\\Steam").ok()?;
+	let steam_key = hklm
+		.open_subkey("SOFTWARE\\WOW6432Node\\Valve\\Steam")
+		.ok()?;
 	let install_path: String = steam_key.get_value("InstallPath").ok()?;
-	
-	let test_path = PathBuf::from(&install_path).join("steamapps/common/Geometry Dash/GeometryDash.exe");
-	
+
+	let test_path =
+		PathBuf::from(&install_path).join("steamapps/common/Geometry Dash/GeometryDash.exe");
+
 	if test_path.exists() && test_path.is_file() {
 		return Some(PathBuf::from(&test_path));
 	}
-	
+
 	let config_path = PathBuf::from(&install_path).join("config/config.vdf");
-	
+
 	for line_res in read_lines(&config_path).ok()? {
 		let line = line_res.ok()?;
 		if line.to_string().contains("BaseInstallFolder_") {
 			let end = line.rfind("\"").unwrap();
 			let start = line[0..end].rfind("\"").unwrap();
-			let result = &line[start+1..end];
-			let path = PathBuf::from(&result).join("steamapps/common/Geometry Dash/GeometryDash.exe");
-			
+			let result = &line[start + 1..end];
+			let path =
+				PathBuf::from(&result).join("steamapps/common/Geometry Dash/GeometryDash.exe");
+
 			if path.exists() && path.is_file() {
 				return Some(PathBuf::from(&path));
 			}
@@ -67,9 +76,7 @@ pub fn find_path() -> Option<String> {
 	}
 
 	#[cfg(windows)]
-	get_path_from_steam().map(
-		|s| s.to_str().unwrap().to_string().replace("\\", "/")
-	)
+	get_path_from_steam().map(|s| s.to_str().unwrap().to_string().replace("\\", "/"))
 }
 
 pub fn validate_path(path: &Path) -> bool {
@@ -78,8 +85,13 @@ pub fn validate_path(path: &Path) -> bool {
 	}
 
 	#[cfg(target_os = "macos")]
-	return path.is_dir() && path.join(Path::new("Contents/Frameworks/DDHidLib.framework")).exists();
+	return path.is_dir()
+		&& path
+			.join(Path::new("Contents/Frameworks/DDHidLib.framework"))
+			.exists();
 
 	#[cfg(windows)]
-	return !path.is_dir() && path.parent().is_some() && path.parent().unwrap().join("libcocos2d.dll").exists();
+	return !path.is_dir()
+		&& path.parent().is_some()
+		&& path.parent().unwrap().join("libcocos2d.dll").exists();
 }
