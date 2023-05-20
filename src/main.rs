@@ -84,7 +84,7 @@ impl Sandbox for MainWindow {
 
 				if cfg!(target_os = "macos") {
 					dialog = dialog.add_filter("Application", &["app"]);
-				} else if cfg!(windows) {
+				} else if cfg!(windows) || cfg!(target_os = "linux") {
 					dialog = dialog.add_filter("Executable", &["exe"]);
 				}
 

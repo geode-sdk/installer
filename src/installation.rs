@@ -79,7 +79,7 @@ pub fn install_to(path: &Path) -> Result<(), String> {
 
 	let dest_path = if cfg!(target_os = "macos") {
 		path.join(Path::new("Contents/Frameworks/"))
-	} else if cfg!(windows) {
+	} else if cfg!(windows) || cfg!(target_os = "linux") {
 		path.parent().unwrap().to_path_buf()
 	} else {
 		unreachable!();
