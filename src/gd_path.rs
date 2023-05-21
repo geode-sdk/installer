@@ -22,16 +22,16 @@ pub unsafe fn try_from_bundle(bundle: &str) -> Option<String> {
 
 #[cfg(target_os = "linux")]
 fn get_linux_steam_path() -> Option<PathBuf> {
-    let steam_path = PathBuf::from("~/.steam/root/steamapps/common/Geometry Dash/GeometryDash.exe");
-    let flatpak_path = PathBuf::from("~/.var/app/com.valvesoftware.Steam/data/Steam/steamapps/common/Geometry Dash/GeometryDash.exe");
-   
-    if steam_path.exists() && steam_path.is_file() {
-        return Some(steam_path);
-    } else if flatpak_path.exists() && flatpak_path.is_file() {
-        return Some(flatpak_path);
-    }
+	let steam_path = PathBuf::from("~/.steam/root/steamapps/common/Geometry Dash/GeometryDash.exe");
+	let flatpak_path = PathBuf::from("~/.var/app/com.valvesoftware.Steam/data/Steam/steamapps/common/Geometry Dash/GeometryDash.exe");
 
-    None
+	if steam_path.exists() && steam_path.is_file() {
+		return Some(steam_path);
+	} else if flatpak_path.exists() && flatpak_path.is_file() {
+		return Some(flatpak_path);
+	}
+
+	None
 }
 
 #[cfg(target_os = "windows")]
@@ -93,7 +93,7 @@ pub fn find_path() -> Option<String> {
 	return get_path_from_steam().map(|s| s.to_str().unwrap().to_string().replace("\\", "/"));
 
 	#[cfg(target_os = "linux")]
-    return get_linux_steam_path().map(|s| s.to_str().unwrap().to_string().replace("\\", "/"));
+	return get_linux_steam_path().map(|s| s.to_str().unwrap().to_string().replace("\\", "/"));
 }
 
 pub fn validate_path(path: &Path) -> bool {
