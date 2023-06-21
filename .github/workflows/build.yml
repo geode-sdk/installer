@@ -1,0 +1,69 @@
+name: Build Binaries
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - '**'              # every branch
+    - '!no-build-**'    # unless marked as no-build
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - name: "Windows"
+          os_identifier: "win"
+          os: windows-latest
+          build_output: './target/release/installer.exe'
+          file_name: 'GeodeInstaller-win.exe'
+        - name: "macOS"
+          os_identifier: "mac"
+          os: macos-latest
+          build_output: './target/release/bundle/osx/Geode Installer.app'
+          file_name: 'GeodeInstaller.app'
+    
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: dtolnay/rust-toolchain@stable
+        
+    - uses: Swatinem/rust-cache@v2
+      with:
+        key: ${{ matrix.config.name }}
+        
+    - name: Build macOS
+      if: matrix.config.os_identifier == 'mac'
+      run: |
+        cargo install cargo-bundle
+        cargo bundle --release
+        
+    - name: Build Windows
+      if: matrix.config.os_identifier == 'win'
+      run: |
+        cargo build --release
+    
+    - name: Move to output folder
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        mkdir out
+        mv "${{ matrix.config.build_output }}" "./out/${{ matrix.config.file_name }}"
+        
+    - name: Move macOS files
+      shell: bash
+      if: matrix.config.os_identifier == 'mac'
+      working-directory: ${{ github.workspace }}
+      run: |
+        chmod +x ./out/${{ matrix.config.file_name }}/Contents/MacOS/installer
+      
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: GeodeInstaller-${{ matrix.config.os_identifier }}
+        path: ./out
+  

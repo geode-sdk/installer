@@ -1,0 +1,37 @@
+[package]
+name = "installer"
+version = "1.0.0"
+edition = "2021"
+build = "build.rs"
+description = "Installer for the Geode mod loader"
+
+[dependencies]
+native-dialog = "0.6.3"
+reqwest = "0.11.16"
+serde = { version = "1.0.160", features = ["derive"] }
+serde_json = "1.0.96"
+slint = "1.0.1"
+zip-extract = "0.1.2"
+
+[target.'cfg(windows)'.dependencies]
+winreg = "0.50.0"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc = "0.2.7"
+objc-foundation = "0.1.1"
+plist = "1"
+launch-services = "0.0.2"
+core-foundation = "0.6.4"
+
+[build-dependencies]
+slint-build = "1.0.0"
+
+[package.metadata.bundle]
+name = "Geode Installer"
+identifier = "com.geode.installer"
+icon = ["assets/AppIcon.icns"]
+version = "1.0.0"
+copyright = "Copyright (c) Geode Development Team 2023. All rights reserved."
+category = "Developer Tool"
+short_description = "Installer for the Geode modding platform"
+osx_minimum_system_version = "10.9"
